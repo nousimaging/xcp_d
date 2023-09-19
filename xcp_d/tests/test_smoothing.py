@@ -46,7 +46,7 @@ def test_smoothing_nifti(fmriprep_without_freesurfer_data):
     # Smooth the data
     smooth_data = pe.Node(
         Smooth(fwhm=6), name="nifti_smoothing"  # FWHM = kernel size
-    )  # Use fslmaths to smooth the image
+    )  # Use nilearn to smooth the image
     smooth_data.inputs.in_file = in_file
     results = smooth_data.run()
     out_file = results.outputs.out_file

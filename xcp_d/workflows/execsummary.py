@@ -5,7 +5,6 @@ import fnmatch
 import os
 
 from nipype import Function, logging
-from nipype.interfaces import fsl
 from nipype.interfaces import utility as niu
 from nipype.pipeline import engine as pe
 from niworkflows.engine.workflows import LiterateWorkflow as Workflow
@@ -806,20 +805,6 @@ def init_plot_custom_slices_wf(
     )
 
     workflow.connect([(inputnode, binarize_edges, [("overlay_file", "in_file")])])
-
-    make_image = pe.MapNode(
-        fsl.Slicer(show_orientation=True, label_slices=True),
-        name="make_image",
-        iterfield=["single_slice", "slice_number"],
-    )
-    make_image.inputs.single_slice = SINGLE_SLICES
-    make_image.inputs.slice_number = SLICE_NUMBERS
-
-    # fmt:off
-    workflow.connect([
-        (inputnode, make_image, [("underlay_file", "in_file")]),
-        (binarize_edges, make_image, [("out_file", "image_edges")]),
-    ])
     # fmt:on
 
     combine_images = pe.Node(
@@ -827,7 +812,7 @@ def init_plot_custom_slices_wf(
         name="combine_images",
     )
 
-    workflow.connect([(make_image, combine_images, [("out_file", "in_files")])])
+    workflow.connect([(inputnode, combine_images, [("underlay_file", "in_files")])])
 
     ds_overlay_figure = pe.Node(
         DerivativesDataSink(
