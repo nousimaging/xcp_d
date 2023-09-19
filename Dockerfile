@@ -14,6 +14,9 @@ RUN find $HOME -type d -exec chmod go=u {} + && \
     find $HOME -type f -exec chmod go=u {} + && \
     rm -rf $HOME/.npm $HOME/.conda $HOME/.empty
 
+RUN rm -r /opt/fsl
+ENV FSLDIR="/null"
+
 RUN ldconfig
 WORKDIR /tmp/
 
