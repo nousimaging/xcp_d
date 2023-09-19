@@ -12,7 +12,7 @@ from pkg_resources import resource_filename as pkgrf
 
 from xcp_d.interfaces.bids import DerivativesDataSink
 from xcp_d.interfaces.nilearn import BinaryMath, ResampleToImage
-from xcp_d.interfaces.plotting import AnatomicalPlot, PNGAppend
+from xcp_d.interfaces.plotting import AnatomicalPlot
 from xcp_d.interfaces.workbench import ShowScene
 from xcp_d.utils.doc import fill_doc
 from xcp_d.utils.execsummary import (
@@ -807,13 +807,6 @@ def init_plot_custom_slices_wf(
     workflow.connect([(inputnode, binarize_edges, [("overlay_file", "in_file")])])
     # fmt:on
 
-    combine_images = pe.Node(
-        PNGAppend(out_file="out.png"),
-        name="combine_images",
-    )
-
-    workflow.connect([(inputnode, combine_images, [("underlay_file", "in_files")])])
-
     ds_overlay_figure = pe.Node(
         DerivativesDataSink(
             base_directory=output_dir,
@@ -829,7 +822,7 @@ def init_plot_custom_slices_wf(
     # fmt:off
     workflow.connect([
         (inputnode, ds_overlay_figure, [("name_source", "source_file")]),
-        (combine_images, ds_overlay_figure, [("out_file", "in_file")]),
+        (inputnode, ds_overlay_figure, [("underlay_file", "in_file")]),
     ])
     # fmt:on
 
