@@ -834,8 +834,6 @@ def init_plot_overlay_wf(
     desc,
     name="plot_overlay_wf",
 ):
-    """Use the default slices from slicesdir to make a plot."""
-    from xcp_d.interfaces.plotting import SlicesDir
 
     workflow = Workflow(name=name)
 
@@ -849,20 +847,6 @@ def init_plot_overlay_wf(
         ),
         name="inputnode",
     )
-
-    plot_overlay_figure = pe.Node(
-        SlicesDir(out_extension=".png"),
-        name="plot_overlay_figure",
-    )
-
-    # fmt:off
-    workflow.connect([
-        (inputnode, plot_overlay_figure, [
-            ("underlay_file", "in_files"),
-            ("overlay_file", "outline_image"),
-        ]),
-    ])
-    # fmt:on
 
     ds_overlay_figure = pe.Node(
         DerivativesDataSink(
@@ -879,7 +863,7 @@ def init_plot_overlay_wf(
     # fmt:off
     workflow.connect([
         (inputnode, ds_overlay_figure, [("name_source", "source_file")]),
-        (plot_overlay_figure, ds_overlay_figure, [("out_files", "in_file")]),
+        (inputnode, ds_overlay_figure, [("underlay_file", "in_file")]),
     ])
     # fmt:on
 
